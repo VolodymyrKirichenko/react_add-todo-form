@@ -1,10 +1,19 @@
 import './App.scss';
-
 import React, { useState } from 'react';
-import usersFromServer from './api/users';
-import todosFromServer from './api/todos';
-import { PreparedTodo, User } from './types/app.typedefs';
+import TextField from '@mui/material/TextField';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import { TodoList } from './components/TodoList';
+import { PreparedTodo, User } from './types/app.typedefs';
+import todosFromServer from './api/todos';
+import usersFromServer from './api/users';
 
 const findUserById = (userId: number): User | null => (
   usersFromServer.find(user => user.id === userId) || null
@@ -26,7 +35,7 @@ const getTodoId = (todos: PreparedTodo[]) => {
 };
 
 export const App = () => {
-  const [todosList, setTodoList] = useState<PreparedTodo[]>(preparedTodos);
+  const [todoList, setTodoList] = useState<PreparedTodo[]>(preparedTodos);
   const [title, setTitle] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
   const [isTitleError, setIsTitleError] = useState(false);
@@ -62,7 +71,7 @@ export const App = () => {
     }
 
     const newTodo: PreparedTodo = {
-      id: getTodoId(todosList),
+      id: getTodoId(todoList),
       title,
       completed: false,
       userId: Number(selectedUser),
@@ -75,53 +84,89 @@ export const App = () => {
   };
 
   return (
-    <div className="App">
-      <h1>Add todo form</h1>
+    <div className="app">
+      <Paper elevation={5}>
+        <Box
+          sx={{
+            backgroundColor: 'lightgrey',
+          }}
+        >
+          <div className="app__body">
+            <h1>Add todo form</h1>
 
-      <form onSubmit={onSubmit}>
-        <div className="field">
-          <input
-            type="text"
-            data-cy="titleInput"
-            placeholder="there should be a title here"
-            value={title}
-            onChange={handleChange}
-          />
-          {isTitleError && <span className="error">Please enter a title</span>}
-        </div>
+            <form onSubmit={onSubmit}>
+              <div className="gap">
+                <div className="field">
+                  <div className="input">
+                    <TextField
+                      sx={{ width: 300 }}
+                      id="outlined-basic"
+                      label="Message"
+                      variant="outlined"
+                      value={title}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-        <div className="field">
-          <select
-            data-cy="userSelect"
-            value={selectedUser}
-            onChange={(event) => setSelectedUser(event.target.value)}
-          >
-            <option value="0">Choose a user</option>
-            {usersFromServer.map(user => {
-              const { id, name } = user;
+                  {isTitleError && (
+                    <span className="error">Please enter a title</span>
+                  )}
+                </div>
 
-              return (
-                <option
-                  key={id}
-                  value={id}
+                <div className="field">
+                  <div className="input">
+                    <FormControl sx={{ m: 1, width: 300, margin: 0 }}>
+                      <InputLabel id="demo-multiple-name-label">
+                        Name
+                      </InputLabel>
+
+                      <Select
+                        labelId="demo-multiple-name-label"
+                        id="demo-multiple-name"
+                        value={selectedUser}
+                        onChange={(event) => (
+                          setSelectedUser(event.target.value))}
+                        input={<OutlinedInput label="Name" />}
+                      >
+                        {usersFromServer.map((user) => {
+                          const { id, name } = user;
+
+                          return (
+                            <MenuItem
+                              key={id}
+                              value={id}
+                            >
+                              {name}
+                            </MenuItem>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </div>
+
+                  <div>
+                    {(!selectedUser && hasSelectedError) && (
+                      <span className="error">Please choose a user</span>
+                    )}
+                  </div>
+                </div>
+
+                <Button
+                  sx={{ width: 'max-content' }}
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                  data-cy="submitButton"
+                  type="submit"
                 >
-                  { name }
-                </option>
-              );
-            })}
-          </select>
+                  Send
+                </Button>
+              </div>
+            </form>
 
-          {(!selectedUser && hasSelectedError) && (
-            <span className="error">Please choose a user</span>
-          )}
-        </div>
-
-        <button type="submit" data-cy="submitButton">
-          Add
-        </button>
-      </form>
-
-      <TodoList todos={todosList} />
+            <TodoList todos={todoList} />
+          </div>
+        </Box>
+      </Paper>
     </div>
   );
 };

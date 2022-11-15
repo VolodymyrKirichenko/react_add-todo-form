@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import classNames from 'classnames';
+import Paper from '@mui/material/Paper';
 import { PreparedTodo } from '../../types/app.typedefs';
 import { UserInfo } from '../UserInfo';
 
@@ -16,19 +17,21 @@ export const TodoInfo: FC<Props> = ({ todo }) => {
   } = todo;
 
   return (
-    <article
-      data-id={id}
-      className={classNames('TodoInfo', {
-        'TodoInfo--completed': completed,
-      })}
-    >
-      <h2 className="TodoInfo__title">
-        {title}
-      </h2>
+    <Paper elevation={2}>
+      <article
+        data-id={id}
+        className={classNames('todoInfo', {
+          'todoInfo--completed': completed,
+        })}
+      >
+        <h2 className="todoInfo__title">
+          {title}
+        </h2>
 
-      {user && (
-        <UserInfo user={user} />
-      )}
-    </article>
+        {user && (
+          <UserInfo user={user} />
+        )}
+      </article>
+    </Paper>
   );
 };
