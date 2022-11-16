@@ -16,7 +16,13 @@ button {
 }
 
 .error {
+  visibility: hidden;
+
   color: red;
+}
+
+.isError {
+  visibility: initial;
 }
 
 .input {
